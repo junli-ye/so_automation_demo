@@ -3,114 +3,166 @@
     xmlns="sap.m"
     xmlns:u="sap.ui.unified"
     xmlns:l="sap.ui.layout"
+    xmlns:f="sap.f"
+    xmlns:card="sap.f.cards"
     xmlns:core="sap.ui.core">
 
-    <Page id="page" title="SO Automation">
+    <Page id="page" title="SO Automation" backgroundDesign="Transparent">
         <content>
-            <VBox>
-                <!-- File Upload Section -->
-                <HBox alignItems="Center" class="sapUiSmallMarginBegin sapUiSmallMarginTop">
-                    <u:FileUploader
-                        id="fileUploader"
-                        buttonText="Upload Excel"
-                        accept=".xlsx"
-                        change="onFileSelect"
-                        class="sapUiSmallMarginEnd"/>
-                    <Text id="fileNameText" text=""/>
-                </HBox>
+            <l:Grid defaultSpan="XL12 L12 M12 S12" class="sapUiSmallMargin">
+                <!-- File Upload Card -->
+                <f:Card class="sapUiSmallMargin">
+                    <f:header>
+                        <card:Header
+                            title="Upload Excel File"
+                            subtitle="Select and upload your SO Excel file"
+                            iconSrc="sap-icon://upload"/>
+                    </f:header>
+                    <f:content>
+                        <VBox class="sapUiSmallMargin">
+                            <u:FileUploader
+                                id="fileUploader"
+                                buttonText="Choose Excel File"
+                                accept=".xlsx"
+                                change="onFileSelect"
+                                style="Emphasized"
+                                class="sapUiSmallMarginBottom"/>
+                            <MessageStrip
+                                id="fileNameStrip"
+                                text="No file selected"
+                                type="Information"
+                                showIcon="true"/>
+                        </VBox>
+                    </f:content>
+                </f:Card>
 
-                <!-- Customer and Rule Section -->
-                <Panel class="sapUiSmallMarginBegin sapUiSmallMarginEnd sapUiSmallMarginTop">
-                    <HBox>
-                        <VBox class="sapUiSmallMarginEnd" width="300px">
-                            <Label text="Customer"/>
+                <!-- Configuration Card -->
+                <f:Card class="sapUiSmallMargin">
+                    <f:header>
+                        <card:Header
+                            title="Process Configuration"
+                            subtitle="Set up processing parameters"
+                            iconSrc="sap-icon://settings"/>
+                    </f:header>
+                    <f:content>
+                        <VBox class="sapUiSmallMargin">
+                            <!-- Customer Selection -->
+                            <Label text="Customer" required="true" class="sapUiTinyMarginBottom"/>
                             <Select
                                 id="customerSelect"
                                 change="onCustomerChange"
+                                class="sapUiSmallMarginBottom"
                                 width="100%">
                                 <core:Item key="customerA" text="Customer A"/>
                                 <core:Item key="customerB" text="Customer B"/>
                             </Select>
-                        </VBox>
-                        <VBox width="100%">
-                            <HBox justifyContent="SpaceBetween">
-                                <Label text="Rule Configuration"/>
-                                <HBox>
+
+                            <!-- Rule Configuration -->
+                            <Panel headerText="Rule Configuration" 
+                                   expandable="true" 
+                                   expanded="true"
+                                   class="sapUiSmallMarginBottom">
+                                <HBox justifyContent="End" class="sapUiTinyMarginBottom">
                                     <Button
                                         id="btnEditRule"
                                         text="Edit Rule"
+                                        icon="sap-icon://edit"
                                         press="onEditRule"
                                         class="sapUiTinyMarginEnd"/>
                                     <Button
                                         id="btnCancelEditRule"
                                         text="Cancel"
+                                        icon="sap-icon://cancel"
                                         visible="false"
                                         press="onCancelEditRule"/>
                                 </HBox>
-                            </HBox>
-                            <TextArea
-                                id="rulePreview"
-                                rows="4"
-                                width="100%"
-                                editable="false"/>
-                        </VBox>
-                    </HBox>
-                </Panel>
+                                <TextArea
+                                    id="rulePreview"
+                                    rows="4"
+                                    width="100%"
+                                    editable="false"/>
+                            </Panel>
 
-                <!-- Batch Size and Automation Button -->
-                <Panel class="sapUiSmallMarginBegin sapUiSmallMarginEnd">
-                    <HBox alignItems="Center" justifyContent="SpaceBetween">
-                        <VBox class="sapUiSmallMarginEnd">
-                            <Label text="Batch Size"/>
+                            <!-- Batch Size -->
+                            <Label text="Batch Size" required="true" class="sapUiTinyMarginBottom"/>
                             <Select
                                 id="batchSizeSelect"
-                                width="200px">
-                                <core:Item key="1" text="1"/>
-                                <core:Item key="5" text="5"/>
-                                <core:Item key="10" text="10"/>
+                                class="sapUiSmallMarginBottom"
+                                width="100%">
+                                <core:Item key="1" text="1 record per batch"/>
+                                <core:Item key="5" text="5 records per batch"/>
+                                <core:Item key="10" text="10 records per batch"/>
                             </Select>
-                        </VBox>
-                        <Button
-                            id="btnAutomation"
-                            text="AI Automation"
-                            type="Emphasized"
-                            press="onStartAutomation"/>
-                    </HBox>
-                </Panel>
 
-                <!-- Results Table -->
-                <Table
-                    id="resultsTable"
-                    items="{results>/rows}"
-                    class="sapUiSmallMarginBegin sapUiSmallMarginEnd sapUiSmallMarginBottom">
-                    <columns>
-                        <Column>
-                            <Text text="Valid"/>
-                        </Column>
-                        <Column>
-                            <Text text="Row Index"/>
-                        </Column>
-                        <Column>
-                            <Text text="PO Number"/>
-                        </Column>
-                        <Column>
-                            <Text text="Result"/>
-                        </Column>
-                    </columns>
-                    <items>
-                        <ColumnListItem>
-                            <cells>
-                                <ObjectStatus
-                                    text="{= ${results>valid} ? 'Valid' : 'Invalid'}"
-                                    state="{= ${results>valid} ? 'Success' : 'Error'}"/>
-                                <Text text="{results>rowIndex}"/>
-                                <Text text="{results>poNumber}"/>
-                                <Text text="{results>result}"/>
-                            </cells>
-                        </ColumnListItem>
-                    </items>
-                </Table>
-            </VBox>
+                            <!-- Action Button -->
+                            <Button
+                                id="btnAutomation"
+                                text="Start AI Automation"
+                                type="Emphasized"
+                                width="100%"
+                                icon="sap-icon://activate"
+                                press="onStartAutomation"/>
+                        </VBox>
+                    </f:content>
+                </f:Card>
+
+                <!-- Results Card -->
+                <f:Card class="sapUiSmallMargin">
+                    <f:header>
+                        <card:Header
+                            title="Processing Results"
+                            subtitle="View automated processing results"
+                            iconSrc="sap-icon://table-view"/>
+                    </f:header>
+                    <f:content>
+                        <Table
+                            id="resultsTable"
+                            items="{results>/rows}"
+                            sticky="ColumnHeaders"
+                            class="sapUiSmallMargin">
+                            <headerToolbar>
+                                <Toolbar>
+                                    <Title text="Results" level="H2"/>
+                                    <ToolbarSpacer/>
+                                    <SearchField width="15rem" placeholder="Search results..."/>
+                                </Toolbar>
+                            </headerToolbar>
+                            <columns>
+                                <Column>
+                                    <Text text="Status"/>
+                                </Column>
+                                <Column>
+                                    <Text text="Row"/>
+                                </Column>
+                                <Column>
+                                    <Text text="PO Number"/>
+                                </Column>
+                                <Column width="60%">
+                                    <Text text="Processing Result"/>
+                                </Column>
+                            </columns>
+                            <items>
+                                <ColumnListItem>
+                                    <cells>
+                                        <ObjectStatus
+                                            text="{= ${results>valid} ? 'Valid' : 'Invalid'}"
+                                            state="{= ${results>valid} ? 'Success' : 'Error'}"
+                                            icon="{= ${results>valid} ? 'sap-icon://accept' : 'sap-icon://alert'}"/>
+                                        <ObjectNumber
+                                            number="{results>rowIndex}"
+                                            emphasized="false"/>
+                                        <ObjectIdentifier
+                                            title="{results>poNumber}"/>
+                                        <Text
+                                            text="{results>result}"
+                                            wrapping="true"/>
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+                    </f:content>
+                </f:Card>
+            </l:Grid>
         </content>
     </Page>
 </mvc:View>

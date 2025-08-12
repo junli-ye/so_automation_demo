@@ -1,6 +1,116 @@
 <mvc:View controllerName="yegeoaiso.controller.View1"
     xmlns:mvc="sap.ui.core.mvc"
-    xmlns="sap.m">
-    <Page id="page" title="{i18n>title}">
+    xmlns="sap.m"
+    xmlns:u="sap.ui.unified"
+    xmlns:l="sap.ui.layout"
+    xmlns:core="sap.ui.core">
+
+    <Page id="page" title="SO Automation">
+        <content>
+            <VBox>
+                <!-- File Upload Section -->
+                <HBox alignItems="Center" class="sapUiSmallMarginBegin sapUiSmallMarginTop">
+                    <u:FileUploader
+                        id="fileUploader"
+                        buttonText="Upload Excel"
+                        accept=".xlsx"
+                        change="onFileSelect"
+                        class="sapUiSmallMarginEnd"/>
+                    <Text id="fileNameText" text=""/>
+                </HBox>
+
+                <!-- Customer and Rule Section -->
+                <Panel class="sapUiSmallMarginBegin sapUiSmallMarginEnd sapUiSmallMarginTop">
+                    <HBox>
+                        <VBox class="sapUiSmallMarginEnd" width="300px">
+                            <Label text="Customer"/>
+                            <Select
+                                id="customerSelect"
+                                change="onCustomerChange"
+                                width="100%">
+                                <core:Item key="customerA" text="Customer A"/>
+                                <core:Item key="customerB" text="Customer B"/>
+                            </Select>
+                        </VBox>
+                        <VBox width="100%">
+                            <HBox justifyContent="SpaceBetween">
+                                <Label text="Rule Configuration"/>
+                                <HBox>
+                                    <Button
+                                        id="btnEditRule"
+                                        text="Edit Rule"
+                                        press="onEditRule"
+                                        class="sapUiTinyMarginEnd"/>
+                                    <Button
+                                        id="btnCancelEditRule"
+                                        text="Cancel"
+                                        visible="false"
+                                        press="onCancelEditRule"/>
+                                </HBox>
+                            </HBox>
+                            <TextArea
+                                id="rulePreview"
+                                rows="4"
+                                width="100%"
+                                editable="false"/>
+                        </VBox>
+                    </HBox>
+                </Panel>
+
+                <!-- Batch Size and Automation Button -->
+                <Panel class="sapUiSmallMarginBegin sapUiSmallMarginEnd">
+                    <HBox alignItems="Center" justifyContent="SpaceBetween">
+                        <VBox class="sapUiSmallMarginEnd">
+                            <Label text="Batch Size"/>
+                            <Select
+                                id="batchSizeSelect"
+                                width="200px">
+                                <core:Item key="1" text="1"/>
+                                <core:Item key="5" text="5"/>
+                                <core:Item key="10" text="10"/>
+                            </Select>
+                        </VBox>
+                        <Button
+                            id="btnAutomation"
+                            text="AI Automation"
+                            type="Emphasized"
+                            press="onStartAutomation"/>
+                    </HBox>
+                </Panel>
+
+                <!-- Results Table -->
+                <Table
+                    id="resultsTable"
+                    items="{results>/rows}"
+                    class="sapUiSmallMarginBegin sapUiSmallMarginEnd sapUiSmallMarginBottom">
+                    <columns>
+                        <Column>
+                            <Text text="Valid"/>
+                        </Column>
+                        <Column>
+                            <Text text="Row Index"/>
+                        </Column>
+                        <Column>
+                            <Text text="PO Number"/>
+                        </Column>
+                        <Column>
+                            <Text text="Result"/>
+                        </Column>
+                    </columns>
+                    <items>
+                        <ColumnListItem>
+                            <cells>
+                                <ObjectStatus
+                                    text="{= ${results>valid} ? 'Valid' : 'Invalid'}"
+                                    state="{= ${results>valid} ? 'Success' : 'Error'}"/>
+                                <Text text="{results>rowIndex}"/>
+                                <Text text="{results>poNumber}"/>
+                                <Text text="{results>result}"/>
+                            </cells>
+                        </ColumnListItem>
+                    </items>
+                </Table>
+            </VBox>
+        </content>
     </Page>
 </mvc:View>

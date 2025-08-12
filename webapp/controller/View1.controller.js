@@ -42,8 +42,25 @@ sap.ui.define([
             const oFileUploader = oEvent.getSource();
             const sFileName = oEvent.getParameter("newValue");
             
-            // Display the selected filename in the UI
-            this.byId("fileNameText").setText(sFileName);
+            // Update the MessageStrip with file information
+            const oMessageStrip = this.byId("fileNameStrip");
+            
+            if (!sFileName) {
+                oMessageStrip.setText("No file selected. Only Excel (.xlsx) files are allowed.");
+                oMessageStrip.setType("Information");
+                return;
+            }
+            
+            // Validate file extension
+            if (!sFileName.endsWith(".xlsx")) {
+                oMessageStrip.setText("Invalid file type. Please select an Excel (.xlsx) file");
+                oMessageStrip.setType("Error");
+                return;
+            }
+            
+            // Update UI with success message
+            oMessageStrip.setText("Selected file: " + sFileName);
+            oMessageStrip.setType("Success");
 
             // TODO: Implement Excel processing logic:
             // 1. File validation

@@ -3,49 +3,59 @@
     xmlns="sap.m"
     xmlns:u="sap.ui.unified"
     xmlns:l="sap.ui.layout"
-    xmlns:f="sap.f"
-    xmlns:card="sap.f.cards"
-    xmlns:core="sap.ui.core">
+    xmlns:core="sap.ui.core"
+    xmlns:m="sap.m">
 
     <Page id="page" title="SO Automation" backgroundDesign="Transparent">
         <content>
-            <l:Grid defaultSpan="XL12 L12 M12 S12" class="sapUiSmallMargin">
-                <!-- File Upload Card -->
-                <f:Card class="sapUiSmallMargin">
-                    <f:header>
-                        <card:Header
-                            title="Upload Excel File"
-                            subtitle="Select and upload your SO Excel file"
-                            iconSrc="sap-icon://upload"/>
-                    </f:header>
-                    <f:content>
-                        <VBox class="sapUiSmallMargin">
-                            <u:FileUploader
-                                id="fileUploader"
-                                buttonText="Choose Excel File"
-                                accept=".xlsx"
-                                change="onFileSelect"
-                                style="Emphasized"
-                                class="sapUiSmallMarginBottom"/>
-                            <MessageStrip
-                                id="fileNameStrip"
-                                text="No file selected"
-                                type="Information"
-                                showIcon="true"/>
-                        </VBox>
-                    </f:content>
-                </f:Card>
+            <!-- File Upload Section -->
+            <Panel expandable="true"
+                   expanded="true"
+                   headerText="Upload Excel File"
+                   width="auto"
+                   class="sapUiNoContentPadding">
+                <headerToolbar>
+                    <Toolbar style="Clear">
+                        <Title text="Upload Excel File"/>
+                        <ToolbarSpacer/>
+                        <core:Icon src="sap-icon://upload" class="sapUiTinyMarginEnd"/>
+                    </Toolbar>
+                </headerToolbar>
+                <content>
+                    <HBox alignItems="Center" class="sapUiSmallMargin">
+                        <u:FileUploader
+                            id="fileUploader"
+                            buttonText="Choose Excel File"
+                            accept=".xlsx"
+                            change="onFileSelect"
+                            style="Emphasized"/>
+                        <MessageStrip
+                            id="fileNameStrip"
+                            text="No file selected"
+                            type="Information"
+                            showIcon="true"
+                            class="sapUiTinyMarginBegin"/>
+                    </HBox>
+                </content>
+            </Panel>
 
-                <!-- Configuration Card -->
-                <f:Card class="sapUiSmallMargin">
-                    <f:header>
-                        <card:Header
-                            title="Process Configuration"
-                            subtitle="Set up processing parameters"
-                            iconSrc="sap-icon://settings"/>
-                    </f:header>
-                    <f:content>
-                        <VBox class="sapUiSmallMargin">
+                <!-- Configuration Section -->
+            <Panel expandable="true"
+                   expanded="true"
+                   headerText="Process Configuration"
+                   width="auto"
+                   class="sapUiNoContentPadding">
+                <headerToolbar>
+                    <Toolbar style="Clear">
+                        <Title text="Process Configuration"/>
+                        <ToolbarSpacer/>
+                        <core:Icon src="sap-icon://settings" class="sapUiTinyMarginEnd"/>
+                    </Toolbar>
+                </headerToolbar>
+                <content>
+                    <HBox class="sapUiSmallMargin" renderType="Bare">
+                        <!-- Left Section: Customer and Batch Size -->
+                        <VBox width="300px" class="sapUiTinyMarginEnd">
                             <!-- Customer Selection -->
                             <Label text="Customer" required="true" class="sapUiTinyMarginBottom"/>
                             <Select
@@ -56,32 +66,6 @@
                                 <core:Item key="customerA" text="Customer A"/>
                                 <core:Item key="customerB" text="Customer B"/>
                             </Select>
-
-                            <!-- Rule Configuration -->
-                            <Panel headerText="Rule Configuration" 
-                                   expandable="true" 
-                                   expanded="true"
-                                   class="sapUiSmallMarginBottom">
-                                <HBox justifyContent="End" class="sapUiTinyMarginBottom">
-                                    <Button
-                                        id="btnEditRule"
-                                        text="Edit Rule"
-                                        icon="sap-icon://edit"
-                                        press="onEditRule"
-                                        class="sapUiTinyMarginEnd"/>
-                                    <Button
-                                        id="btnCancelEditRule"
-                                        text="Cancel"
-                                        icon="sap-icon://cancel"
-                                        visible="false"
-                                        press="onCancelEditRule"/>
-                                </HBox>
-                                <TextArea
-                                    id="rulePreview"
-                                    rows="4"
-                                    width="100%"
-                                    editable="false"/>
-                            </Panel>
 
                             <!-- Batch Size -->
                             <Label text="Batch Size" required="true" class="sapUiTinyMarginBottom"/>
@@ -103,66 +87,91 @@
                                 icon="sap-icon://activate"
                                 press="onStartAutomation"/>
                         </VBox>
-                    </f:content>
-                </f:Card>
 
-                <!-- Results Card -->
-                <f:Card class="sapUiSmallMargin">
-                    <f:header>
-                        <card:Header
-                            title="Processing Results"
-                            subtitle="View automated processing results"
-                            iconSrc="sap-icon://table-view"/>
-                    </f:header>
-                    <f:content>
-                        <Table
-                            id="resultsTable"
-                            items="{results>/rows}"
-                            sticky="ColumnHeaders"
-                            class="sapUiSmallMargin">
-                            <headerToolbar>
-                                <Toolbar>
-                                    <Title text="Results" level="H2"/>
-                                    <ToolbarSpacer/>
-                                    <SearchField width="15rem" placeholder="Search results..."/>
-                                </Toolbar>
-                            </headerToolbar>
-                            <columns>
-                                <Column>
-                                    <Text text="Status"/>
-                                </Column>
-                                <Column>
-                                    <Text text="Row"/>
-                                </Column>
-                                <Column>
-                                    <Text text="PO Number"/>
-                                </Column>
-                                <Column width="60%">
-                                    <Text text="Processing Result"/>
-                                </Column>
-                            </columns>
-                            <items>
-                                <ColumnListItem>
-                                    <cells>
-                                        <ObjectStatus
-                                            text="{= ${results>valid} ? 'Valid' : 'Invalid'}"
-                                            state="{= ${results>valid} ? 'Success' : 'Error'}"
-                                            icon="{= ${results>valid} ? 'sap-icon://accept' : 'sap-icon://alert'}"/>
-                                        <ObjectNumber
-                                            number="{results>rowIndex}"
-                                            emphasized="false"/>
-                                        <ObjectIdentifier
-                                            title="{results>poNumber}"/>
-                                        <Text
-                                            text="{results>result}"
-                                            wrapping="true"/>
-                                    </cells>
-                                </ColumnListItem>
-                            </items>
-                        </Table>
-                    </f:content>
-                </f:Card>
-            </l:Grid>
+                        <!-- Right Section: Rule Preview -->
+                        <VBox width="100%" class="sapUiTinyMarginBegin">
+                            <HBox justifyContent="SpaceBetween" class="sapUiTinyMarginBottom">
+                                <Label text="Rule Configuration" required="true"/>
+                                <HBox>
+                                    <Button
+                                        id="btnEditRule"
+                                        text="Edit Rule"
+                                        icon="sap-icon://edit"
+                                        press="onEditRule"
+                                        class="sapUiTinyMarginEnd"/>
+                                    <Button
+                                        id="btnCancelEditRule"
+                                        text="Cancel"
+                                        icon="sap-icon://cancel"
+                                        visible="false"
+                                        press="onCancelEditRule"/>
+                                </HBox>
+                            </HBox>
+                            <TextArea
+                                id="rulePreview"
+                                rows="8"
+                                width="100%"
+                                editable="false"/>
+                        </VBox>
+                    </HBox>
+                </content>
+            </Panel>
+
+            <!-- Results Section -->
+            <Panel expandable="true"
+                   expanded="true"
+                   headerText="Processing Results"
+                   width="auto"
+                   class="sapUiNoContentPadding">
+                <headerToolbar>
+                    <Toolbar style="Clear">
+                        <Title text="Processing Results"/>
+                        <ToolbarSpacer/>
+                        <SearchField width="15rem" placeholder="Search results..."/>
+                        <core:Icon src="sap-icon://table-view" class="sapUiTinyMarginEnd"/>
+                    </Toolbar>
+                </headerToolbar>
+                <content>
+                    <Table
+                        id="resultsTable"
+                        items="{results>/rows}"
+                        sticky="ColumnHeaders"
+                        class="sapUiSmallMargin">
+                        <columns>
+                            <Column>
+                                <Text text="Status"/>
+                            </Column>
+                            <Column>
+                                <Text text="Row"/>
+                            </Column>
+                            <Column>
+                                <Text text="PO Number"/>
+                            </Column>
+                            <Column width="60%">
+                                <Text text="Processing Result"/>
+                            </Column>
+                        </columns>
+                        <items>
+                            <ColumnListItem>
+                                <cells>
+                                    <ObjectStatus
+                                        text="{= ${results>valid} ? 'Valid' : 'Invalid'}"
+                                        state="{= ${results>valid} ? 'Success' : 'Error'}"
+                                        icon="{= ${results>valid} ? 'sap-icon://accept' : 'sap-icon://alert'}"/>
+                                    <ObjectNumber
+                                        number="{results>rowIndex}"
+                                        emphasized="false"/>
+                                    <ObjectIdentifier
+                                        title="{results>poNumber}"/>
+                                    <Text
+                                        text="{results>result}"
+                                        wrapping="true"/>
+                                </cells>
+                            </ColumnListItem>
+                        </items>
+                    </Table>
+                </content>
+            </Panel>
         </content>
     </Page>
 </mvc:View>

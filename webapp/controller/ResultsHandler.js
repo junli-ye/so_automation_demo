@@ -40,6 +40,19 @@ sap.ui.define([], function() {
             var oResultsModel = ctrl.getView().getModel("results");
             var aCurrentRows = oResultsModel.getProperty("/rows") || [];
             oResultsModel.setProperty("/rows", aCurrentRows.concat(aTableRows));
+
+            // 更新完表格数据后，更新分页信息
+            var oResultsModel = ctrl.getView().getModel("results");
+            var aRows = oResultsModel.getProperty("/rows") || [];
+            var iRowsPerPage = 10;
+            var iTotalPages = Math.ceil(aRows.length / iRowsPerPage);
+            
+            oResultsModel.setProperty("/pagination", {
+                currentPage: 1,
+                totalPages: iTotalPages || 1,
+                rowsPerPage: iRowsPerPage,
+                totalRows: aRows.length
+            });
         },
 
         /**

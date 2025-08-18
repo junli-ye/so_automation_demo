@@ -217,98 +217,116 @@
                             class="sapUiTinyMarginEnd"/>
                         <Text text="{batch>/processedCount} of {batch>/totalCount} Processed" class="sapUiTinyMarginEnd"/>
                         <ToolbarSpacer/>
-                        <ToolbarSpacer/>
-                        <SearchField width="15rem" placeholder="Search results..."/>
+                        <SearchField 
+                            id="resultsSearchField"
+                            width="15rem" 
+                            placeholder="Search results..." 
+                            search="onResultsSearch"/>
+                        <Button
+                            icon="sap-icon://action-settings"
+                            tooltip="Table Settings"
+                            press="onTableSettingsPress"/>
                         <core:Icon src="sap-icon://table-view" class="sapUiTinyMarginEnd"/>
                     </Toolbar>
                 </headerToolbar>
                 <content>
-                    <Table
-                        id="resultsTable"
-                        items="{results>/rows}"
-                        sticky="ColumnHeaders"
-                        class="sapUiSmallMargin">
-                        <columns>
-                            <!-- 固定列 -->
-                            <Column width="80px"><Text text="Row #" /></Column>
-                            <Column width="100px"><Text text="Status" /></Column>
-                            <Column>
-                                <Text text="Message" />
-                            </Column>
-                            <!-- 根据客户显示动态列 -->
-                            <Column visible="{= ${customerRules>/selectedCustomer} === 'C001' || ${customerRules>/selectedCustomer} === 'C002'}">
-                                <Text text="Customer Code" />
-                            </Column>
-                            <Column visible="{= ${customerRules>/selectedCustomer} === 'C001' || ${customerRules>/selectedCustomer} === 'C002'}">
-                                <Text text="PO Number" />
-                            </Column>
-                            <Column visible="{= ${customerRules>/selectedCustomer} === 'C001' || ${customerRules>/selectedCustomer} === 'C002'}">
-                                <Text text="PO Date" />
-                            </Column>
-                            <Column visible="{= ${customerRules>/selectedCustomer} === 'C001' || ${customerRules>/selectedCustomer} === 'C002'}">
-                                <Text text="Item No" />
-                            </Column>
-                            <!-- 客户 A 特有列 -->
-                            <Column visible="{= ${customerRules>/selectedCustomer} === 'C001'}">
-                                <Text text="PO Line" />
-                            </Column>
-                            <Column>
-                                <Text text="Customer Part No" />
-                            </Column>
-                            <Column>
-                                <Text text="Quantity" />
-                            </Column>
-                            <Column>
-                                <Text text="Request Date" />
-                            </Column>
-                            <!-- 客户 A 特有列 -->
-                            <Column visible="{= ${customerRules>/selectedCustomer} === 'C001'}">
-                                <Text text="Net Price" />
-                            </Column>
-                            <Column>
-                                <Text text="Part No" />
-                            </Column>
-                            <Column>
-                                <Text text="Sales Order Type" />
-                            </Column>
-                            <!-- 客户 B 特有列 -->
-                            <Column visible="{= ${customerRules>/selectedCustomer} === 'C002'}">
-                                <Text text="Plant" />
-                            </Column>
-                            <Column visible="{= ${customerRules>/selectedCustomer} === 'C002'}">
-                                <Text text="Ship To" />
-                            </Column>
-                            <Column>
-                                <Text text="Reason" />
-                            </Column>
-                        </columns>
-                        <items>
-                            <ColumnListItem>
-                                <cells>
-                                    <Text text="{results>rowIndex}" />
-                                    <ObjectStatus
-                                        text="{= ${results>valid} ? '' : 'Invalid' }"
-                                        state="Success"
-                                        icon="sap-icon://status-positive"/>
-                                    <Text text="{results>result}" />
-                                    <Text text="{results>customerCode}" />
-                                    <Text text="{results>poNumber}" />
-                                    <Text text="{results>poDate}" />
-                                    <Text text="{results>itemNo}" />
-                                    <Text text="{results>poLine}" />
-                                    <Text text="{results>customerPartNo}" />
-                                    <Text text="{results>quantity}" />
-                                    <Text text="{results>requestDate}" />
-                                    <Text text="{results>netPrice}" />
-                                    <Text text="{results>partNo}" />
-                                    <Text text="{results>salesOrderType}" />
-                                    <Text text="{results>plant}" />
-                                    <Text text="{results>shipTo}" />
-                                    <Text text="{= ${results>valid} ? '' : ${results>reason}}" />
-                                </cells>
-                            </ColumnListItem>
-                        </items>
-                    </Table>
+                    <VBox class="sapUiSmallMargin">
+                        <Table
+                            id="resultsTable"
+                            items="{
+                                path: 'results>/rows',
+                                sorter: {
+                                    path: 'rowIndex',
+                                    descending: false
+                                }
+                            }"
+                            sticky="ColumnHeaders"
+                            growing="true"
+                            growingThreshold="1000"
+                            growingScrollToLoad="true">
+                            <columns>
+                                <!-- 固定列 -->
+                                <Column width="80px" hAlign="Begin"><Text text="Row #" /></Column>
+                                <Column width="100px" hAlign="Begin"><Text text="Status" /></Column>
+                                <Column hAlign="Begin">
+                                    <Text text="Message" />
+                                </Column>
+                                <!-- 根据客户显示动态列 -->
+                                <Column visible="{= ${customerRules>/selectedCustomer} === 'C001' || ${customerRules>/selectedCustomer} === 'C002'}" hAlign="Begin">
+                                    <Text text="Customer Code" />
+                                </Column>
+                                <Column visible="{= ${customerRules>/selectedCustomer} === 'C001' || ${customerRules>/selectedCustomer} === 'C002'}" hAlign="Begin">
+                                    <Text text="PO Number" />
+                                </Column>
+                                <Column visible="{= ${customerRules>/selectedCustomer} === 'C001' || ${customerRules>/selectedCustomer} === 'C002'}" hAlign="Begin">
+                                    <Text text="PO Date" />
+                                </Column>
+                                <Column visible="{= ${customerRules>/selectedCustomer} === 'C001' || ${customerRules>/selectedCustomer} === 'C002'}" hAlign="Begin">
+                                    <Text text="Item No" />
+                                </Column>
+                                <!-- 客户 A 特有列 -->
+                                <Column visible="{= ${customerRules>/selectedCustomer} === 'C001'}" hAlign="Begin">
+                                    <Text text="PO Line" />
+                                </Column>
+                                <Column hAlign="Begin">
+                                    <Text text="Customer Part No" />
+                                </Column>
+                                <Column hAlign="Begin">
+                                    <Text text="Quantity" />
+                                </Column>
+                                <Column hAlign="Begin">
+                                    <Text text="Request Date" />
+                                </Column>
+                                <!-- 客户 A 特有列 -->
+                                <Column visible="{= ${customerRules>/selectedCustomer} === 'C001'}" hAlign="Begin">
+                                    <Text text="Net Price" />
+                                </Column>
+                                <Column hAlign="Begin">
+                                    <Text text="Part No" />
+                                </Column>
+                                <Column hAlign="Begin">
+                                    <Text text="Sales Order Type" />
+                                </Column>
+                                <!-- 客户 B 特有列 -->
+                                <Column visible="{= ${customerRules>/selectedCustomer} === 'C002'}" hAlign="Begin">
+                                    <Text text="Plant" />
+                                </Column>
+                                <Column visible="{= ${customerRules>/selectedCustomer} === 'C002'}" hAlign="Begin">
+                                    <Text text="Ship To" />
+                                </Column>
+                                <Column hAlign="Begin">
+                                    <Text text="Reason" />
+                                </Column>
+                            </columns>
+                            <items>
+                                <ColumnListItem>
+                                    <cells>
+                                        <Text text="{results>rowIndex}" />
+                                        <!-- 修改：无论valid是true还是false都显示绿色对勾 -->
+                                        <ObjectStatus
+                                            text="{= ${results>valid} ? 'Valid' : 'Invalid' }"
+                                            state="Success"
+                                            icon="sap-icon://status-positive"/>
+                                        <Text text="{results>result}" />
+                                        <Text text="{results>customerCode}" />
+                                        <Text text="{results>poNumber}" />
+                                        <Text text="{results>poDate}" />
+                                        <Text text="{results>itemNo}" />
+                                        <Text text="{results>poLine}" />
+                                        <Text text="{results>customerPartNo}" />
+                                        <Text text="{results>quantity}" />
+                                        <Text text="{results>requestDate}" />
+                                        <Text text="{results>netPrice}" />
+                                        <Text text="{results>partNo}" />
+                                        <Text text="{results>salesOrderType}" />
+                                        <Text text="{results>plant}" />
+                                        <Text text="{results>shipTo}" />
+                                        <Text text="{= ${results>valid} ? '' : ${results>reason}}" />
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+                    </VBox>
                 </content>
             </Panel>
         </content>

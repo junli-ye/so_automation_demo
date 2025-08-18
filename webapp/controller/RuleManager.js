@@ -2,19 +2,25 @@
  * RuleManager.js
  * Handles customer rule selection, preview, editing, and cancellation
  */
-export const RuleManager = {
+sap.ui.define([], function() {
+    "use strict";
     /**
-     * 初始化客户规则模型
-     * @param {sap.ui.core.mvc.Controller} ctrl
+     * RuleManager.js
+     * Handles customer rule selection, preview, editing, and cancellation
      */
-    init(ctrl) {
-        const oCustomerRulesModel = new sap.ui.model.json.JSONModel({
-            customers: [
-                { key: "C001", name: "Customer A" },
-                { key: "C002", name: "Customer B" },
-                { key: "C003", name: "Customer C" }
-            ],
-            rules: {
+    var RuleManager = {
+        /**
+         * 初始化客户规则模型
+         * @param {sap.ui.core.mvc.Controller} ctrl
+         */
+        init: function(ctrl) {
+            var oCustomerRulesModel = new sap.ui.model.json.JSONModel({
+                customers: [
+                    { key: "C001", name: "Customer A" },
+                    { key: "C002", name: "Customer B" },
+                    { key: "C003", name: "Customer C" }
+                ],
+                rules: {
                 "C001": [
                     "Check whether the value of `CustomerPurchaseCode` is `YAG-YGO`. If yes, keep the original data.",
                     "Insert a new column to the right of `POItemNo`, name it `PO+POLINE`, and set its value to `CONCATENATE(PONo, POItemNo)`.",
@@ -37,85 +43,90 @@ export const RuleManager = {
                     "Check that Order Qty is greater than 0",
                     "Validate that Plant is in ['PL01', 'PL02', 'PL03']"
                 ]
-            },                
-            selectedCustomer: null,
-            currentRules: []
-        });
-        ctrl.getView().setModel(oCustomerRulesModel, "customerRules");
-        // 默认选择第一个客户
-        const oCustomerSelect = ctrl.byId("customerSelect");
-        if (oCustomerSelect.getItems().length > 0) {
-            oCustomerSelect.setSelectedItem(oCustomerSelect.getItems()[0]);
-            ctrl.onCustomerChange({
-                getParameter: function(param) {
-                    if (param === "selectedItem") {
-                        return oCustomerSelect.getSelectedItem();
-                    }
-                }
+            },   
+                selectedCustomer: null,
+                currentRules: []
             });
-        }
-    },
+            ctrl.getView().setModel(oCustomerRulesModel, "customerRules");
+            // 默认选择第一个客户
+            var oCustomerSelect = ctrl.byId("customerSelect");
+            if (oCustomerSelect.getItems().length > 0) {
+                oCustomerSelect.setSelectedItem(oCustomerSelect.getItems()[0]);
+                ctrl.onCustomerChange({
+                    getParameter: function(param) {
+                        if (param === "selectedItem") {
+                            return oCustomerSelect.getSelectedItem();
+                        }
+                    }
+                });
+            }
+        },
 
-    /**
-     * Handles customer selection change event
-     * Loads and displays the selected customer's rule set
-     */
-    onCustomerChange(ctrl, oEvent) {
-        const sSelectedKey = oEvent.getParameter("selectedItem").getKey();
-        const oCustomerRulesModel = ctrl.getView().getModel("customerRules");
-        const oRulePreview = ctrl.byId("rulePreview");
-        const oBtnEdit = ctrl.byId("btnEditRule");
-        const oBtnCancel = ctrl.byId("btnCancelEditRule");
-        const aRules = oCustomerRulesModel.getProperty(`/rules/${sSelectedKey}`) || [];
-        const sFormattedRules = aRules.map((rule, idx) => `${idx + 1}. ${rule}`).join("\n");
-        oRulePreview.setValue(sFormattedRules);
-        oRulePreview.setEditable(false);
-        oRulePreview.setValueState("None");
-        ctrl._sOriginalRule = sFormattedRules;
-        oBtnEdit.setText("Edit Rule");
-        oBtnEdit.setEnabled(true);
-        oBtnCancel.setVisible(false);
-        oCustomerRulesModel.setProperty("/selectedCustomer", sSelectedKey);
-        oCustomerRulesModel.setProperty("/currentRules", aRules);
-        oRulePreview.setValueState(sap.ui.core.ValueState.None);
-    },
+        /**
+         * Handles customer selection change event
+         * Loads and displays the selected customer's rule set
+         */
+        onCustomerChange: function(ctrl, oEvent) {
+            var sSelectedKey = oEvent.getParameter("selectedItem").getKey();
+            var oCustomerRulesModel = ctrl.getView().getModel("customerRules");
+            var oRulePreview = ctrl.byId("rulePreview");
+            var oBtnEdit = ctrl.byId("btnEditRule");
+            var oBtnCancel = ctrl.byId("btnCancelEditRule");
+            var aRules = oCustomerRulesModel.getProperty("/rules/" + sSelectedKey) || [];
+            var sFormattedRules = aRules.map(function(rule, idx) {
+                return (idx + 1) + ". " + rule;
+            }).join("\n");
+            oRulePreview.setValue(sFormattedRules);
+            oRulePreview.setEditable(false);
+            oRulePreview.setValueState("None");
+            ctrl._sOriginalRule = sFormattedRules;
+            oBtnEdit.setText("Edit Rule");
+            oBtnEdit.setEnabled(true);
+            oBtnCancel.setVisible(false);
+            oCustomerRulesModel.setProperty("/selectedCustomer", sSelectedKey);
+            oCustomerRulesModel.setProperty("/currentRules", aRules);
+            oRulePreview.setValueState(sap.ui.core.ValueState.None);
+        },
 
-    /**
-     * Handles the rule editing button event
-     * Toggles between edit and preview modes for rule configuration
-     */
-    onEditRule(ctrl) {
-        const oRulePreview = ctrl.byId("rulePreview");
-        const oBtnEdit = ctrl.byId("btnEditRule");
-        const oBtnCancel = ctrl.byId("btnCancelEditRule");
-        if (oRulePreview.getEditable()) {
+        /**
+         * Handles the rule editing button event
+         * Toggles between edit and preview modes for rule configuration
+         */
+        onEditRule: function(ctrl) {
+            var oRulePreview = ctrl.byId("rulePreview");
+            var oBtnEdit = ctrl.byId("btnEditRule");
+            var oBtnCancel = ctrl.byId("btnCancelEditRule");
+            if (oRulePreview.getEditable()) {
+                oRulePreview.setEditable(false);
+                oBtnEdit.setText("Edit Rule");
+                oBtnCancel.setVisible(false);
+                // TODO: Implement rule saving logic
+            } else {
+                oRulePreview.setEditable(true);
+                oBtnEdit.setText("Save");
+                oBtnCancel.setVisible(true);
+                ctrl._sOriginalRule = oRulePreview.getValue();
+            }
+        },
+
+        /**
+         * Handles the cancellation of rule editing
+         * Restores the original rule configuration and resets UI state
+         */
+        onCancelEditRule: function(ctrl) {
+            var oRulePreview = ctrl.byId("rulePreview");
+            var oBtnEdit = ctrl.byId("btnEditRule");
+            var oBtnCancel = ctrl.byId("btnCancelEditRule");
             oRulePreview.setEditable(false);
             oBtnEdit.setText("Edit Rule");
             oBtnCancel.setVisible(false);
-            // TODO: Implement rule saving logic
-        } else {
-            oRulePreview.setEditable(true);
-            oBtnEdit.setText("Save");
-            oBtnCancel.setVisible(true);
-            ctrl._sOriginalRule = oRulePreview.getValue();
+            if (ctrl._sOriginalRule) {
+                oRulePreview.setValue(ctrl._sOriginalRule);
+            }
+            oRulePreview.setValueState(sap.ui.core.ValueState.None);
+            ctrl._sOriginalRule = null;
         }
-    },
+    };
 
-    /**
-     * Handles the cancellation of rule editing
-     * Restores the original rule configuration and resets UI state
-     */
-    onCancelEditRule(ctrl) {
-        const oRulePreview = ctrl.byId("rulePreview");
-        const oBtnEdit = ctrl.byId("btnEditRule");
-        const oBtnCancel = ctrl.byId("btnCancelEditRule");
-        oRulePreview.setEditable(false);
-        oBtnEdit.setText("Edit Rule");
-        oBtnCancel.setVisible(false);
-        if (ctrl._sOriginalRule) {
-            oRulePreview.setValue(ctrl._sOriginalRule);
-        }
-        oRulePreview.setValueState(sap.ui.core.ValueState.None);
-        ctrl._sOriginalRule = null;
-    }
-};
+    return RuleManager;
+});

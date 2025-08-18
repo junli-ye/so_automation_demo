@@ -659,35 +659,78 @@ sap.ui.define([
          * @param {number} iBatchStartIndex 批次起始行索引
          */
         _processBatchResponse(oApiResponse, iBatchStartIndex) {
-            if (!oApiResponse.data || !Array.isArray(oApiResponse.data)) {
-                throw new Error("API响应数据格式错误：缺少data数组");
-            }
+    if (!oApiResponse.data || !Array.isArray(oApiResponse.data)) {
+        throw new Error("API响应数据格式错误：缺少data数组");
+    }
 
-            // 转换为表格显示格式
-            const aTableRows = oApiResponse.data.map((oItem) => ({
-                valid: oItem.valid,
-                rowIndex: iBatchStartIndex + oItem.index,  // 使用API返回的索引
-                poNumber: oItem.data.PONo || `Unknown-${oItem.index}`,
-                customerCode: oItem.data.CustomerPurchaseCode,
-                poDate: oItem.data.PODate,
-                poItemNo: oItem.data.POItemNo,
-                poLine: oItem.data["PO+POLINE"],
-                customerPartNo: oItem.data.CustomerPartNO,
-                quantity: oItem.data.QTY,
-                requestDate: oItem.data.RequestDate,
-                netPrice: oItem.data.NetPrice,
-                partNo: oItem.data.PartNo,
-                salesOrderType: oItem.data.SalesOrderType,
-                result: oItem.valid ? "Processing Success" : oItem.error || "Processing Failed"
-            }));
-
-            // 追加到结果表格
-            const oResultsModel = this.getView().getModel("results");
-            const aCurrentRows = oResultsModel.getProperty("/rows") || [];
-            oResultsModel.setProperty("/rows", [...aCurrentRows, ...aTableRows]);
-
-            console.log(`批次结果已添加到表格，新增 ${aTableRows.length} 行`);
+    const sCustomer = this.byId("customerSelect").getSelectedKey();
+    
+    // 根据不同客户的字段映射规则
+    const fieldMappings = {
+        "C001": {  // 客户 A
+            customerCode: "CustomerPurchaseCode",
+            poNumber: "PONo",
+            poDate: "PODate",
+            itemNo: "POItemNo", // 注意这里的命名
+            poLine: "PO+POLINE",
+            customerPartNo: "CustomerPartNO",
+            quantity: "QTY",
+            requestDate: "RequestDate",
+            netPrice: "NetPrice",
+            partNo: "PartNo",
+            salesOrderType: "SalesOrderType"
         },
+        "C002": {  // 客户 B
+            vendorNo: "Vendor NO",         // 供应商编号
+            customerCode: "Vendor NO",      // 客户代码使用供应商编号
+            poNumber: "PO Number",         // 采购订单号
+            poDate: "PO Date",            // 采购订单日期
+            itemNo: "Item No",            // 项目号
+            deliveryDate: "Delivery Date", // 交付日期
+            requestDate: "Delivery Date",  // 请求日期使用交付日期
+            quantity: "Order Qty",         // 订单数量
+            orderQty: "Order Qty",        // 原始订单数量
+            customerPartNo: "Manuf. P/N",  // 客户零件号
+            partNo: "Part No",            // 零件号
+            plant: "Plant",               // 工厂
+            shipTo: "Ship To",            // 收货方
+            soldTo: "Sold To",            // 售达方
+            crd: "CRD",                   // 客户请求日期
+            orderType: "Order Type",      // 订单类型
+            salesOrderType: "SalesOrderType"   // 销售订单类型
+        }
+    };
+
+    const mapping = fieldMappings[sCustomer] || {};
+
+    // 转换为表格显示格式
+    const aTableRows = oApiResponse.data.map((oItem, index) => {
+        const row = {
+            rowIndex: iBatchStartIndex + index + 1,
+            valid: oItem.valid,
+            result: oItem.valid ? "Processing Success" : "Processing Failed",
+            // 添加 reason 字段，只有在 invalid 时才显示错误原因
+            reason: oItem.reason || ""
+            
+        };
+
+        // 获取当前客户的字段映射
+        const mapping = fieldMappings[sCustomer] || {};
+
+        // 根据映射规则添加字段
+        Object.keys(mapping).forEach(key => {
+            row[key] = oItem.data[mapping[key]] || "";
+        });
+
+        return row;
+    });
+    
+
+    // 追加到结果表格
+    const oResultsModel = this.getView().getModel("results");
+    const aCurrentRows = oResultsModel.getProperty("/rows") || [];
+    oResultsModel.setProperty("/rows", [...aCurrentRows, ...aTableRows]);
+},
 
         /**
         * 更新批处理统计信息

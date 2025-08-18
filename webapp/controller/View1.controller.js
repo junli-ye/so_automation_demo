@@ -402,13 +402,13 @@ sap.ui.define([
             
             // 检查客户选择
             if (!sCustomer) {
-                MessageToast.show("请先选择客户");
+                MessageToast.show("Please select a customer first");
                 return false;
             }
 
             // 检查批次大小
             if (!sBatchSize) {
-                MessageToast.show("请选择批次大小");
+                MessageToast.show("Please select batch size");
                 return false;
             }
             
@@ -418,14 +418,14 @@ sap.ui.define([
             
             // 检查规则配置
             if (!aRules || !aRules.length) {
-                MessageToast.show("所选客户没有配置规则");
+                MessageToast.show("Selected customer has no configured rules");
                 return false;
             }
 
             // 检查Excel数据
             const oExcelModel = this.getView().getModel("excelData");
             if (!oExcelModel || !oExcelModel.getData().rows || oExcelModel.getData().rows.length === 0) {
-                MessageToast.show("请先上传Excel文件");
+                MessageToast.show("Please upload Excel file first");
                 return false;
             }
 
@@ -465,7 +465,7 @@ sap.ui.define([
             oBatchModel.setProperty("/progress", 0);
             oBatchModel.setProperty("/processed", 0);
 
-            console.log("批处理初始化完成");
+            console.log("Batch processing initialized");
         },
 
         /**
@@ -497,7 +497,7 @@ sap.ui.define([
             this._oBatchState.totalRows = iTotalRows;
             this._oBatchState.totalBatches = iTotalBatches;
 
-            console.log(`准备批处理: ${iTotalRows}行数据，分${iTotalBatches}个批次，每批${iBatchSize}行`);
+            console.log(`Preparing batch processing: ${iTotalRows} rows, ${iTotalBatches} batches, ${iBatchSize} rows per batch`);
 
             return {
                 customer: sCustomer,
@@ -521,7 +521,7 @@ sap.ui.define([
          * @param {Object} oBatchConfig 批处理配置
          */
         async _executeBatchProcessing(oBatchConfig) {
-            console.log("开始自动批处理循环");
+            console.log("Starting automatic batch processing loop");
 
             // 将对象格式的行转换为数组格式
             const aTransformedRows = oBatchConfig.allRows.map(row => 
@@ -532,7 +532,7 @@ sap.ui.define([
             for (let iBatchIndex = 0; iBatchIndex < oBatchConfig.totalBatches; iBatchIndex++) {
                 // 检查是否应该停止处理（用户可能想要取消）
                 if (!this._oBatchState.isProcessing) {
-                    console.log("批处理被用户中断");
+                    console.log("Batch processing interrupted by user");
                     break;
                 }
 
@@ -548,7 +548,7 @@ sap.ui.define([
                     const iBatchEnd = Math.min(iBatchStart + oBatchConfig.batchSize, aTransformedRows.length);
                     const aBatchRows = aTransformedRows.slice(iBatchStart, iBatchEnd);
 
-                    console.log(`处理第 ${iBatchIndex + 1}/${oBatchConfig.totalBatches} 批次 (行 ${iBatchStart + 1}-${iBatchEnd})`);
+                    console.log(`Processing batch ${iBatchIndex + 1}/${oBatchConfig.totalBatches} (rows ${iBatchStart + 1}-${iBatchEnd})`);
 
                     // 构建API请求
                     const oApiRequest = {
@@ -565,7 +565,7 @@ sap.ui.define([
                         }
                     };
 
-                    console.log(`批次 ${iBatchIndex + 1} 请求数据:`, oApiRequest);
+                    console.log(`Batch ${iBatchIndex + 1} request data:`, oApiRequest);
 
                     // 调用同步API处理当前批次
                     const oApiResponse = await this._callBatchAPI(oApiRequest);
@@ -591,7 +591,7 @@ sap.ui.define([
                     }
 
                 } catch (error) {
-                    console.error(`批次 ${iBatchIndex + 1} 处理失败:`, error);
+                    console.error(`Batch ${iBatchIndex + 1} processing failed:`, error);
             
                     // 处理单个批次的错误，但继续处理下一批次
                     this._handleBatchError(iBatchIndex + 1, iBatchStart, iBatchEnd - iBatchStart, error);
@@ -607,7 +607,7 @@ sap.ui.define([
          * @returns {Promise<Object>} API响应对象
          */
         async _callBatchAPI(oRequest) {
-            console.log(`调用API处理批次 ${oRequest.options.batchInfo.batchIndex}`);
+            console.log(`Calling API to process batch ${oRequest.options.batchInfo.batchIndex}`);
 
             try {
                 const response = await fetch('https://yageo-poc-backend-grateful-aardvark-kn.cfapps.eu12.hana.ondemand.com/v1/process', {
@@ -619,21 +619,21 @@ sap.ui.define([
                     body: JSON.stringify(oRequest)
                 });
 
-                console.log(`批次 ${oRequest.options.batchInfo.batchIndex} API响应状态: ${response.status}`);
+                console.log(`Batch ${oRequest.options.batchInfo.batchIndex} API response status: ${response.status}`);
                 
                 // 检查HTTP状态码
                 if (response.status !== 200) {
                     const sErrorText = await response.text();
-                    throw new Error(`API调用失败: ${response.status} ${response.statusText}. ${sErrorText}`);
+                    throw new Error(`API call failed: ${response.status} ${response.statusText}. ${sErrorText}`);
                 }
 
                 // 先获取 JSON 数据,避免重复读取响应体
                 const responseData = await response.json();
-                console.log(`批次 ${oRequest.options.batchInfo.batchIndex} API响应内容:`, responseData);
+                console.log(`Batch ${oRequest.options.batchInfo.batchIndex} API response content:`, responseData);
 
                 // 验证响应格式
                 if (responseData.status !== "success") {
-                    throw new Error("API处理失败");
+                    throw new Error("API processing failed");
                 }
 
                 return {
@@ -647,7 +647,7 @@ sap.ui.define([
                 };
 
             } catch (error) {
-                console.error(`批次 ${oRequest.options.batchInfo.batchIndex} API调用失败:`, error);
+                console.error(`Batch ${oRequest.options.batchInfo.batchIndex} API call failed:`, error);
                 throw error;
             }
         },
@@ -660,14 +660,14 @@ sap.ui.define([
          */
         _processBatchResponse(oApiResponse, iBatchStartIndex) {
     if (!oApiResponse.data || !Array.isArray(oApiResponse.data)) {
-        throw new Error("API响应数据格式错误：缺少data数组");
+        throw new Error("API response data format error: missing data array");
     }
 
     const sCustomer = this.byId("customerSelect").getSelectedKey();
     
     // 根据不同客户的字段映射规则
     const fieldMappings = {
-        "C001": {  // 客户 A
+        "C001": {  // Customer A
             customerCode: "CustomerPurchaseCode",
             poNumber: "PONo",
             poDate: "PODate",
@@ -680,24 +680,24 @@ sap.ui.define([
             partNo: "PartNo",
             salesOrderType: "SalesOrderType"
         },
-        "C002": {  // 客户 B
-            vendorNo: "Vendor NO",         // 供应商编号
-            customerCode: "Vendor NO",      // 客户代码使用供应商编号
-            poNumber: "PO Number",         // 采购订单号
-            poDate: "PO Date",            // 采购订单日期
-            itemNo: "Item No",            // 项目号
-            deliveryDate: "Delivery Date", // 交付日期
-            requestDate: "Delivery Date",  // 请求日期使用交付日期
-            quantity: "Order Qty",         // 订单数量
-            orderQty: "Order Qty",        // 原始订单数量
-            customerPartNo: "Manuf. P/N",  // 客户零件号
-            partNo: "Part No",            // 零件号
-            plant: "Plant",               // 工厂
-            shipTo: "Ship To",            // 收货方
-            soldTo: "Sold To",            // 售达方
-            crd: "CRD",                   // 客户请求日期
-            orderType: "Order Type",      // 订单类型
-            salesOrderType: "SalesOrderType"   // 销售订单类型
+        "C002": {  // Customer B
+            vendorNo: "Vendor NO",         // Vendor Number
+            customerCode: "Vendor NO",      // Customer Code uses Vendor Number
+            poNumber: "PO Number",         // Purchase Order Number
+            poDate: "PO Date",            // Purchase Order Date
+            itemNo: "Item No",            // Item Number
+            deliveryDate: "Delivery Date", // Delivery Date
+            requestDate: "Delivery Date",  // Request Date uses Delivery Date
+            quantity: "Order Qty",         // Order Quantity
+            orderQty: "Order Qty",        // Original Order Quantity
+            customerPartNo: "Manuf. P/N",  // Customer Part Number
+            partNo: "Part No",            // Part Number
+            plant: "Plant",               // Plant
+            shipTo: "Ship To",            // Ship To
+            soldTo: "Sold To",            // Sold To
+            crd: "CRD",                   // Customer Request Date
+            orderType: "Order Type",      // Order Type
+            salesOrderType: "SalesOrderType"   // Sales Order Type
         }
     };
 
@@ -766,8 +766,8 @@ sap.ui.define([
                 aErrorRows.push({
                     valid: false,
                     rowIndex: iStartRow + i + 1,
-                    poNumber: `批次-${iBatchNumber}-行${i + 1}`,
-                    result: `批次处理失败: ${oError.message}`
+                    poNumber: `Batch-${iBatchNumber}-Row${i + 1}`,
+                    result: `Batch processing failed: ${oError.message}`
                 });
             }
 
@@ -781,7 +781,7 @@ sap.ui.define([
             this._oBatchState.errorCount += iBatchSize;
 
             // 显示错误提示但不中断整体处理
-            MessageToast.show(`批次 ${iBatchNumber} 处理失败，将继续处理后续批次`, {
+            MessageToast.show(`Batch ${iBatchNumber} processing failed, will continue with subsequent batches`, {
                 duration: 3000
             });
         },
@@ -807,7 +807,7 @@ sap.ui.define([
             const iEstimatedRemainingTime = Math.round((iAvgTimePerBatch * iRemainingBatches) / 1000);
 
             // 控制台输出详细进度信息
-            console.log(`进度: ${iProgressPercent}% | 批次: ${oState.currentBatch}/${oState.totalBatches} | 已处理: ${oState.processedRows}/${oState.totalRows} | 预计剩余: ${iEstimatedRemainingTime}秒`);
+            console.log(`Progress: ${iProgressPercent}% | Batch: ${oState.currentBatch}/${oState.totalBatches} | Processed: ${oState.processedRows}/${oState.totalRows} | Estimated remaining: ${iEstimatedRemainingTime}s`);
         },
 
         /**
@@ -833,27 +833,27 @@ sap.ui.define([
 
             // 计算总耗时
             const iTotalTime = Date.now() - oState.startTime;
-            const sTotalTime = `${Math.round(iTotalTime / 1000)}秒`;
+            const sTotalTime = `${Math.round(iTotalTime / 1000)}s`;
 
             // 显示完成摘要
             if (bSuccess) {
-                const sSummaryMessage = `批处理完成！\n` +
-                    `总计: ${oState.totalRows} 行，已处理: ${oState.processedRows} 行\n` +
-                    `成功: ${oState.successCount} 行，失败: ${oState.errorCount} 行\n` +
-                    `总耗时: ${sTotalTime}`;
+                const sSummaryMessage = `Batch processing completed!\n` +
+                    `Total: ${oState.totalRows} rows, Processed: ${oState.processedRows} rows\n` +
+                    `Success: ${oState.successCount} rows, Failed: ${oState.errorCount} rows\n` +
+                    `Total time: ${sTotalTime}`;
             
                 MessageToast.show(sSummaryMessage, { 
                     duration: 6000,
                     width: "auto"
                 });
 
-                console.log("批处理成功完成:", {
-                    总行数: oState.totalRows,
-                    处理行数: oState.processedRows,
-                    成功行数: oState.successCount,
-                    失败行数: oState.errorCount,
-                    总批次: oState.totalBatches,
-                    耗时: sTotalTime
+                console.log("Batch processing completed successfully:", {
+                    totalRows: oState.totalRows,
+                    processedRows: oState.processedRows,
+                    successRows: oState.successCount,
+                    failedRows: oState.errorCount,
+                    totalBatches: oState.totalBatches,
+                    duration: sTotalTime
                 });
             }
 
@@ -867,17 +867,17 @@ sap.ui.define([
          * @param {Error} oError 错误对象
          */
         _handleBatchProcessingError(oError) {
-            console.error("批处理过程中发生严重错误:", oError);
+            console.error("Critical error occurred during batch processing:", oError);
 
             // 恢复UI状态
             this._finalizeBatchProcessing(false);
 
             // 显示错误信息
-            let sUserMessage = "批处理失败: ";
-            if (oError.message.includes("网络") || oError.message.includes("fetch")) {
-                sUserMessage += "网络连接异常，请检查网络连接后重试";
-            } else if (oError.message.includes("API") || oError.message.includes("服务器")) {
-                sUserMessage += "服务暂时不可用，请稍后重试";
+            let sUserMessage = "Batch processing failed: ";
+            if (oError.message.includes("network") || oError.message.includes("fetch")) {
+                sUserMessage += "Network connection error, please check your connection and try again";
+            } else if (oError.message.includes("API") || oError.message.includes("server")) {
+                sUserMessage += "Service temporarily unavailable, please try again later";
             } else {
                 sUserMessage += oError.message;
             }
@@ -955,3 +955,4 @@ sap.ui.define([
         }
     });
 });
+

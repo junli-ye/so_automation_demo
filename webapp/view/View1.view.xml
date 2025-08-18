@@ -1,0 +1,272 @@
+<!--
+/******************************************************************
+ * SO Automation Application - Main View
+ * 
+ * This view implements a three-section interface for SO processing:
+ * 1. File Upload: Handles Excel file selection and validation
+ * 2. Process Configuration: Manages customer selection, rules, and batch size
+ * 3. Results Display: Shows processing results in a sortable/filterable table
+ * 
+ * Author: Junli Ye
+ * Version: 1.0.0
+ * Last Updated: August 12, 2025
+ ******************************************************************/
+-->
+<mvc:View controllerName="yegeoaiso.controller.View1"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:u="sap.ui.unified"
+    xmlns:l="sap.ui.layout"
+    xmlns:core="sap.ui.core"
+    xmlns:m="sap.m">
+
+    <Page id="page" title="SO Automation Demo" backgroundDesign="Transparent">
+        <content>
+            <!--
+            /************************
+             * File Upload Section
+             * 
+             * Components:
+             * - FileUploader: Accepts only .xlsx files
+             * - MessageStrip: Shows selected file name and status
+             ************************/
+            -->
+            <Panel expandable="true"
+                expanded="true"
+                headerText="Upload Excel File"
+                width="auto"
+                class="sapUiNoContentPadding">
+                <headerToolbar>
+                    <Toolbar style="Clear">
+                        <Title text="Upload Excel File"/>
+                        <ToolbarSpacer/>
+                        <core:Icon src="sap-icon://upload" class="sapUiTinyMarginEnd"/>
+                    </Toolbar>
+                </headerToolbar>
+                <content>
+                    <HBox alignItems="Center" class="sapUiSmallMargin">
+                        <!-- <u:FileUploader
+                            id="fileUploader"
+                            buttonText="Choose Excel File"
+                            accept=".xlsx"
+                            change="onFileSelect"
+                            style="Emphasized"/> -->
+                        <u:FileUploader
+                            id="fileUploader"
+                            buttonText="Choose Excel File"
+                            fileType="xlsx"
+                            change="onFileSelect"
+                            style="Emphasized"
+                            useMultipart="false"
+                            sendXHR="true"/>
+                        <Button
+                            id="extractButton"
+                            text="Extract Excel File"
+                            press="onExtractPress"
+                            type="Emphasized"
+                            icon="sap-icon://excel-attachment"
+                            class="sapUiTinyMarginBegin"
+                            tooltip="Extract data from the selected Excel file"/>
+                        <MessageStrip
+                            id="fileNameStrip"
+                            text="No file selected"
+                            type="Information"
+                            showIcon="true"
+                            class="sapUiTinyMarginBegin"/>
+                    </HBox>
+                </content>
+            </Panel>
+
+
+                <!--
+                /*************************************
+                 * Process Configuration Section
+                 * 
+                 * Left Side:
+                 * - Customer Selection Dropdown
+                 * - Batch Size Selection (1/5/10)
+                 * - Start Processing Button
+                 * 
+                 * Right Side:
+                 * - Rule Configuration Preview/Editor
+                 * - Edit/Cancel Buttons
+                 *************************************/
+                -->
+            <Panel expandable="true"
+                   expanded="true"
+                   headerText="Process Configuration"
+                   width="auto"
+                   class="sapUiNoContentPadding">
+                <headerToolbar>
+                    <Toolbar style="Clear">
+                        <Title text="Process Configuration"/>
+                        <ToolbarSpacer/>
+                        <core:Icon src="sap-icon://settings" class="sapUiTinyMarginEnd"/>
+                    </Toolbar>
+                </headerToolbar>
+                <content>
+                    <HBox class="sapUiSmallMargin" renderType="Bare">
+                        <!-- 
+                        Left Section: Customer and Batch Size
+                        Fixed width (300px) container for configuration controls
+                        -->
+                        <VBox width="300px" class="sapUiTinyMarginEnd">
+                            <!-- 
+                            Customer Selection
+                            Events: onCustomerChange - Triggers rule loading
+                            -->
+                            <Label text="Customer" required="true" class="sapUiTinyMarginBottom"/>
+                            <!-- <Select
+                                id="customerSelect"
+                                change="onCustomerChange"
+                                class="sapUiSmallMarginBottom"
+                                width="100%">
+                                <core:Item key="customerA" text="Customer A"/>
+                                <core:Item key="customerB" text="Customer B"/>
+                            </Select> -->
+                            <Select
+                                id="customerSelect"
+                                change="onCustomerChange"
+                                class="sapUiSmallMarginBottom"
+                                width="100%"
+                                items="{customerRules>/customers}">
+                                <core:Item key="{customerRules>key}" text="{customerRules>name}"/>
+                            </Select>
+                            <!-- 
+                            Batch Size Selection
+                            Options: 1, 5, or 10 records per batch
+                            Used to control API request batch size
+                            -->
+                            <Label text="Batch Size" required="true" class="sapUiTinyMarginBottom"/>
+                            <Select
+                                id="batchSizeSelect"
+                                class="sapUiSmallMarginBottom"
+                                width="100%">
+                                <core:Item key="1" text="1 record per batch"/>
+                                <core:Item key="5" text="5 records per batch"/>
+                                <core:Item key="10" text="10 records per batch"/>
+                            </Select>
+
+                            <!-- 
+                            Action Button
+                            Event: onStartAutomation - Initiates batch processing
+                            Enabled only when file is loaded and customer is selected
+                            -->
+                            <Button
+                                id="btnAutomation"
+                                text="Start AI Automation"
+                                type="Emphasized"
+                                width="100%"
+                                icon="sap-icon://activate"
+                                press="onStartAutomation"/>
+                        </VBox>
+
+                        <!-- 
+                        Right Section: Rule Preview
+                        Flexible width container for rule display and editing
+                        Features:
+                        - Read-only preview by default
+                        - Edit mode with save/cancel
+                        - Auto-updates when customer changes
+                        -->
+                        <VBox width="100%" class="sapUiTinyMarginBegin">
+                            <HBox justifyContent="SpaceBetween" class="sapUiTinyMarginBottom">
+                                <Label text="Rule Configuration" required="true"/>
+                                <HBox>
+                                    <Button
+                                        id="btnEditRule"
+                                        text="Edit Rule"
+                                        icon="sap-icon://edit"
+                                        press="onEditRule"
+                                        class="sapUiTinyMarginEnd"/>
+                                    <Button
+                                        id="btnCancelEditRule"
+                                        text="Cancel"
+                                        icon="sap-icon://cancel"
+                                        visible="false"
+                                        press="onCancelEditRule"/>
+                                </HBox>
+                            </HBox>
+                            <TextArea
+                                id="rulePreview"
+                                rows="8"
+                                width="100%"
+                                editable="false"/>
+                        </VBox>
+                    </HBox>
+                </content>
+            </Panel>
+
+            <!--
+            /*********************************
+             * Results Section
+             * 
+             * Features:
+             * - Expandable panel with search
+             * - Status column with icons
+             * - Row index for reference
+             * - PO Number identification
+             * - Detailed result message
+             * 
+             * Data Binding:
+             * - Bound to results>/rows model
+             * - Supports sorting and filtering
+             *********************************/
+            -->
+            <Panel expandable="true"
+                   expanded="true"
+                   headerText="Processing Results"
+                   width="auto"
+                   class="sapUiNoContentPadding">
+                <headerToolbar>
+                    <Toolbar style="Clear">
+                        <Title text="Processing Results"/>
+                        <ToolbarSpacer/>
+                        <SearchField width="15rem" placeholder="Search results..."/>
+                        <core:Icon src="sap-icon://table-view" class="sapUiTinyMarginEnd"/>
+                    </Toolbar>
+                </headerToolbar>
+                <content>
+                    <Table
+                        id="resultsTable"
+                        items="{results>/rows}"
+                        sticky="ColumnHeaders"
+                        class="sapUiSmallMargin">
+                        <columns>
+                            <Column>
+                                <Text text="Status"/>
+                            </Column>
+                            <Column>
+                                <Text text="Row"/>
+                            </Column>
+                            <Column>
+                                <Text text="PO Number"/>
+                            </Column>
+                            <Column width="60%">
+                                <Text text="Processing Result"/>
+                            </Column>
+                        </columns>
+                        <items>
+                            <ColumnListItem>
+                                <cells>
+                                    <ObjectStatus
+                                        text="{= ${results>valid} ? 'Valid' : 'Invalid'}"
+                                        state="{= ${results>valid} ? 'Success' : 'Error'}"
+                                        icon="{= ${results>valid} ? 'sap-icon://accept' : 'sap-icon://alert'}"/>
+                                    <ObjectNumber
+                                        number="{results>rowIndex}"
+                                        emphasized="false"/>
+                                    <ObjectIdentifier
+                                        title="{results>poNumber}"/>
+                                    <Text
+                                        text="{results>result}"
+                                        wrapping="true"/>
+                                </cells>
+                            </ColumnListItem>
+                        </items>
+                    </Table>
+                </content>
+            </Panel>
+        </content>
+    </Page>
+</mvc:View>

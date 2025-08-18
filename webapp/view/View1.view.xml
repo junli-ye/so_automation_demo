@@ -12,7 +12,8 @@
  * Last Updated: August 12, 2025
  ******************************************************************/
 -->
-<mvc:View controllerName="yegeoaiso.controller.View1"
+<mvc:View
+    controllerName="yegeoaiso.controller.View1"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m"
     xmlns:u="sap.ui.unified"
@@ -20,7 +21,11 @@
     xmlns:core="sap.ui.core"
     xmlns:m="sap.m">
 
-    <Page id="page" title="SO Automation Demo" backgroundDesign="Transparent">
+    <Page
+        id="page"
+        title="SO Automation Demo"
+        backgroundDesign="Transparent">
+
         <content>
             <!--
             /************************
@@ -31,7 +36,8 @@
              * - MessageStrip: Shows selected file name and status
              ************************/
             -->
-            <Panel expandable="true"
+            <Panel
+                expandable="true"
                 expanded="true"
                 headerText="Upload Excel File"
                 width="auto"
@@ -77,26 +83,26 @@
                 </content>
             </Panel>
 
-
-                <!--
-                /*************************************
-                 * Process Configuration Section
-                 * 
-                 * Left Side:
-                 * - Customer Selection Dropdown
-                 * - Batch Size Selection (1/5/10)
-                 * - Start Processing Button
-                 * 
-                 * Right Side:
-                 * - Rule Configuration Preview/Editor
-                 * - Edit/Cancel Buttons
-                 *************************************/
-                -->
-            <Panel expandable="true"
-                   expanded="true"
-                   headerText="Process Configuration"
-                   width="auto"
-                   class="sapUiNoContentPadding">
+            <!--
+            /*************************************
+             * Process Configuration Section
+             * 
+             * Left Side:
+             * - Customer Selection Dropdown
+             * - Batch Size Selection (1/5/10)
+             * - Start Processing Button
+             * 
+             * Right Side:
+             * - Rule Configuration Preview/Editor
+             * - Edit/Cancel Buttons
+             *************************************/
+            -->
+            <Panel
+                expandable="true"
+                expanded="true"
+                headerText="Process Configuration"
+                width="auto"
+                class="sapUiNoContentPadding">
                 <headerToolbar>
                     <Toolbar style="Clear">
                         <Title text="Process Configuration"/>
@@ -106,15 +112,9 @@
                 </headerToolbar>
                 <content>
                     <HBox class="sapUiSmallMargin" renderType="Bare">
-                        <!-- 
-                        Left Section: Customer and Batch Size
-                        Fixed width (300px) container for configuration controls
-                        -->
+                        <!-- Left Section: Customer and Batch Size -->
                         <VBox width="300px" class="sapUiTinyMarginEnd">
-                            <!-- 
-                            Customer Selection
-                            Events: onCustomerChange - Triggers rule loading
-                            -->
+                            <!-- Customer Selection -->
                             <Label text="Customer" required="true" class="sapUiTinyMarginBottom"/>
                             <!-- <Select
                                 id="customerSelect"
@@ -132,11 +132,7 @@
                                 items="{customerRules>/customers}">
                                 <core:Item key="{customerRules>key}" text="{customerRules>name}"/>
                             </Select>
-                            <!-- 
-                            Batch Size Selection
-                            Options: 1, 5, or 10 records per batch
-                            Used to control API request batch size
-                            -->
+                            <!-- Batch Size Selection -->
                             <Label text="Batch Size" required="true" class="sapUiTinyMarginBottom"/>
                             <Select
                                 id="batchSizeSelect"
@@ -146,12 +142,7 @@
                                 <core:Item key="5" text="5 records per batch"/>
                                 <core:Item key="10" text="10 records per batch"/>
                             </Select>
-
-                            <!-- 
-                            Action Button
-                            Event: onStartAutomation - Initiates batch processing
-                            Enabled only when file is loaded and customer is selected
-                            -->
+                            <!-- Action Button -->
                             <Button
                                 id="btnAutomation"
                                 text="Start AI Automation"
@@ -160,15 +151,7 @@
                                 icon="sap-icon://activate"
                                 press="onStartAutomation"/>
                         </VBox>
-
-                        <!-- 
-                        Right Section: Rule Preview
-                        Flexible width container for rule display and editing
-                        Features:
-                        - Read-only preview by default
-                        - Edit mode with save/cancel
-                        - Auto-updates when customer changes
-                        -->
+                        <!-- Right Section: Rule Preview -->
                         <VBox width="100%" class="sapUiTinyMarginBegin">
                             <HBox justifyContent="SpaceBetween" class="sapUiTinyMarginBottom">
                                 <Label text="Rule Configuration" required="true"/>
@@ -213,126 +196,119 @@
              * - Supports sorting and filtering
              *********************************/
             -->
-            <Panel expandable="true"
-                   expanded="true"
-                   headerText="Processing Results"
-                   width="auto"
-                   class="sapUiNoContentPadding">
+            <Panel
+                expandable="true"
+                expanded="true"
+                headerText="Processing Results"
+                width="auto"
+                class="sapUiNoContentPadding">
                 <headerToolbar>
                     <Toolbar style="Clear">
                         <Title text="Processing Results"/>
-                        
                         <!-- 添加进度条和处理状态 -->
-            <ToolbarSpacer width="2rem"/>            
-            <ProgressIndicator
-                id="processingProgress"
-                width="200px"
-                percentValue="{batch>/progress}"
-                displayValue="{batch>/progress}%"
-                showValue="true"
-                state="{= ${batch>/progress} === 100 ? 'Success' : 'Information'}"
-                class="sapUiTinyMarginEnd"/>
-                <Text text="{batch>/processedCount} of {batch>/totalCount} Processed" class="sapUiTinyMarginEnd"/>
-                <ToolbarSpacer/>
-            <ToolbarSpacer/>
+                        <ToolbarSpacer width="2rem"/>
+                        <ProgressIndicator
+                            id="processingProgress"
+                            width="200px"
+                            percentValue="{batch>/progress}"
+                            displayValue="{batch>/progress}%"
+                            showValue="true"
+                            state="{= ${batch>/progress} === 100 ? 'Success' : 'Information'}"
+                            class="sapUiTinyMarginEnd"/>
+                        <Text text="{batch>/processedCount} of {batch>/totalCount} Processed" class="sapUiTinyMarginEnd"/>
+                        <ToolbarSpacer/>
+                        <ToolbarSpacer/>
                         <SearchField width="15rem" placeholder="Search results..."/>
                         <core:Icon src="sap-icon://table-view" class="sapUiTinyMarginEnd"/>
                     </Toolbar>
                 </headerToolbar>
                 <content>
-                
                     <Table
                         id="resultsTable"
-                        
                         items="{results>/rows}"
                         sticky="ColumnHeaders"
                         class="sapUiSmallMargin">
-                          <columns>
-        <!-- 固定列 -->
-        <Column width="80px"><Text text="Row #" /></Column>
-        <Column width="100px"><Text text="Status" /></Column>
-        
-        <!-- 根据客户显示动态列 -->
-        <Column visible="{= ${customerRules>/selectedCustomer} === 'C001' || ${customerRules>/selectedCustomer} === 'C002'}">
-            <Text text="Customer Code" />
-        </Column>
-        <Column visible="{= ${customerRules>/selectedCustomer} === 'C001' || ${customerRules>/selectedCustomer} === 'C002'}">
-            <Text text="PO Number" />
-        </Column>
-        <Column visible="{= ${customerRules>/selectedCustomer} === 'C001' || ${customerRules>/selectedCustomer} === 'C002'}">
-            <Text text="PO Date" />
-        </Column>
-        <Column visible="{= ${customerRules>/selectedCustomer} === 'C001' || ${customerRules>/selectedCustomer} === 'C002'}">
-            <Text text="Item No" />
-        </Column>
-        <!-- 客户 A 特有列 -->
-        <Column visible="{= ${customerRules>/selectedCustomer} === 'C001'}">
-            <Text text="PO Line" />
-        </Column>
-        <Column>
-            <Text text="Customer Part No" />
-        </Column>
-        <Column>
-            <Text text="Quantity" />
-        </Column>
-        <Column>
-            <Text text="Request Date" />
-        </Column>
-        <!-- 客户 A 特有列 -->
-        <Column visible="{= ${customerRules>/selectedCustomer} === 'C001'}">
-            <Text text="Net Price" />
-        </Column>
-        <Column>
-            <Text text="Part No" />
-        </Column>
-        <Column>
-            <Text text="Sales Order Type" />
-        </Column>
-        <!-- 客户 B 特有列 -->
-        <Column visible="{= ${customerRules>/selectedCustomer} === 'C002'}">
-            <Text text="Plant" />
-        </Column>
-        <Column visible="{= ${customerRules>/selectedCustomer} === 'C002'}">
-            <Text text="Ship To" />
-        </Column>
-        <Column>
-            <Text text="Message" />
-        </Column>
-        <Column>
-        <Text text="Reason" />
-    </Column>
-    </columns>
-    <items>
-        <ColumnListItem>
-            <cells>
-    <Text text="{results>rowIndex}" />
-    <ObjectStatus
-    text="{= ${results>valid} ? '' : 'Invalid' }"
-    state="Success"
-    icon="sap-icon://status-positive"/>
-    <Text text="{results>customerCode}" />
-    <Text text="{results>poNumber}" />
-    <Text text="{results>poDate}" />
-    <Text text="{results>itemNo}" />
-    <Text text="{results>poLine}" />
-    <Text text="{results>customerPartNo}" />
-    <Text text="{results>quantity}" />
-    <Text text="{results>requestDate}" />
-    <Text text="{results>netPrice}" />
-    <Text text="{results>partNo}" />
-    <Text text="{results>salesOrderType}" />
-    <Text text="{results>plant}" />
-    <Text text="{results>shipTo}" />
-    <Text text="{results>result}" />
-    <Text text="{= ${results>valid} ? '' : ${results>reason}}" />
-</cells>
-        </ColumnListItem>
-    </items>
+                        <columns>
+                            <!-- 固定列 -->
+                            <Column width="80px"><Text text="Row #" /></Column>
+                            <Column width="100px"><Text text="Status" /></Column>
+                            <Column>
+                                <Text text="Message" />
+                            </Column>
+                            <!-- 根据客户显示动态列 -->
+                            <Column visible="{= ${customerRules>/selectedCustomer} === 'C001' || ${customerRules>/selectedCustomer} === 'C002'}">
+                                <Text text="Customer Code" />
+                            </Column>
+                            <Column visible="{= ${customerRules>/selectedCustomer} === 'C001' || ${customerRules>/selectedCustomer} === 'C002'}">
+                                <Text text="PO Number" />
+                            </Column>
+                            <Column visible="{= ${customerRules>/selectedCustomer} === 'C001' || ${customerRules>/selectedCustomer} === 'C002'}">
+                                <Text text="PO Date" />
+                            </Column>
+                            <Column visible="{= ${customerRules>/selectedCustomer} === 'C001' || ${customerRules>/selectedCustomer} === 'C002'}">
+                                <Text text="Item No" />
+                            </Column>
+                            <!-- 客户 A 特有列 -->
+                            <Column visible="{= ${customerRules>/selectedCustomer} === 'C001'}">
+                                <Text text="PO Line" />
+                            </Column>
+                            <Column>
+                                <Text text="Customer Part No" />
+                            </Column>
+                            <Column>
+                                <Text text="Quantity" />
+                            </Column>
+                            <Column>
+                                <Text text="Request Date" />
+                            </Column>
+                            <!-- 客户 A 特有列 -->
+                            <Column visible="{= ${customerRules>/selectedCustomer} === 'C001'}">
+                                <Text text="Net Price" />
+                            </Column>
+                            <Column>
+                                <Text text="Part No" />
+                            </Column>
+                            <Column>
+                                <Text text="Sales Order Type" />
+                            </Column>
+                            <!-- 客户 B 特有列 -->
+                            <Column visible="{= ${customerRules>/selectedCustomer} === 'C002'}">
+                                <Text text="Plant" />
+                            </Column>
+                            <Column visible="{= ${customerRules>/selectedCustomer} === 'C002'}">
+                                <Text text="Ship To" />
+                            </Column>
+                            <Column>
+                                <Text text="Reason" />
+                            </Column>
+                        </columns>
+                        <items>
+                            <ColumnListItem>
+                                <cells>
+                                    <Text text="{results>rowIndex}" />
+                                    <ObjectStatus
+                                        text="{= ${results>valid} ? '' : 'Invalid' }"
+                                        state="Success"
+                                        icon="sap-icon://status-positive"/>
+                                    <Text text="{results>result}" />
+                                    <Text text="{results>customerCode}" />
+                                    <Text text="{results>poNumber}" />
+                                    <Text text="{results>poDate}" />
+                                    <Text text="{results>itemNo}" />
+                                    <Text text="{results>poLine}" />
+                                    <Text text="{results>customerPartNo}" />
+                                    <Text text="{results>quantity}" />
+                                    <Text text="{results>requestDate}" />
+                                    <Text text="{results>netPrice}" />
+                                    <Text text="{results>partNo}" />
+                                    <Text text="{results>salesOrderType}" />
+                                    <Text text="{results>plant}" />
+                                    <Text text="{results>shipTo}" />
+                                    <Text text="{= ${results>valid} ? '' : ${results>reason}}" />
+                                </cells>
+                            </ColumnListItem>
+                        </items>
                     </Table>
-                    
-        
-
-
                 </content>
             </Panel>
         </content>

@@ -246,11 +246,9 @@
                             growingScrollToLoad="true">
                             <columns>
                                 <!-- 固定列 -->
-                                <Column width="80px" hAlign="Begin"><Text text="Row #" /></Column>
-                                <Column width="100px" hAlign="Begin"><Text text="Status" /></Column>
-                                <Column hAlign="Begin">
-                                    <Text text="Message" />
-                                </Column>
+                                <Column width="60px" hAlign="Begin"><Text text="Row #" /></Column>
+                                <Column width="60px" hAlign="Begin"><Text text="Status" /></Column>
+                                <Column width="100px" hAlign="Begin"><Text text="Results" /></Column>
                                 <!-- 根据客户显示动态列 -->
                                 <Column visible="{= ${customerRules>/selectedCustomer} === 'C001' || ${customerRules>/selectedCustomer} === 'C002'}" hAlign="Begin">
                                     <Text text="Customer Code" />
@@ -304,10 +302,13 @@
                                         <Text text="{results>rowIndex}" />
                                         <!-- 修改：无论valid是true还是false都显示绿色对勾 -->
                                         <ObjectStatus
-                                            text="{= ${results>valid} ? 'Valid' : 'Invalid' }"
+                                            text=""
                                             state="Success"
                                             icon="sap-icon://status-positive"/>
-                                        <Text text="{results>result}" />
+                                        <ObjectStatus
+                                            text="{= ${results>result} === 'Processing Success' ? 'Processed' : 'Deleted' }"
+                                            state="{= ${results>result} === 'Processing Success' ? 'Success' : 'Warning' }"
+                                            icon="{= ${results>result} === 'Processing Success' ? 'sap-icon://accept' : 'sap-icon://decline' }"/>
                                         <Text text="{results>customerCode}" />
                                         <Text text="{results>poNumber}" />
                                         <Text text="{results>poDate}" />
